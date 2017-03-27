@@ -31,7 +31,7 @@ export class I18nValidator {
     public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
-    public static readonly defaultIgnoreComment = /^\s*i18n-checker:? ?disable\s*$/;
+    public static readonly defaultIgnoreComment = /^\s*i18n-checker(:| )disable\s*$/;
 
     constructor(private options: II18nValidatorOptions = {}) {
         options.ignoreTags = options.ignoreTags || [];
@@ -92,25 +92,12 @@ export class I18nValidator {
                     }
                 },
                 ontext: (text: string) => {
-                    if (curr && this.options.ignoreTags.includes(curr.tag)) {
-                        return;
-                    }
-                    if (curr && curr.ignored) {
-                        return;
-                    }
-                    if (curr && curr.i18n) {
-                        return;
-                    }
-
-                    const unTemplated = text.replace(this.options.templateMatcher, '');
-                    const trimmed = text.trim();
-                    const containsAnythingMeaningful = this.options.assumeTextCondition.test(unTemplated);
-                    if (trimmed !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n)) {
+                    if (this.shouldWarnAbout(stack, text)) {
                         problems.push({
                             fileName,
-                            line: matchLine(trimmed.split('\n')[0]),
+                            line: matchLine(text.trim().split('\n')[0]),
                             problem: 'missing',
-                            meta: trimmed,
+                            meta: text.trim(),
                         });
                     }
                 },
@@ -125,5 +112,36 @@ export class I18nValidator {
         )
            .parseComplete(contents);
         return problems;
+    }
+
+    /**
+     * Returns whether we need to report a problem about the current element
+     * in the stack missing i18n tags for the provided text.
+     */
+    private shouldWarnAbout(stack: IElementEntry[], text: string): boolean {
+        if (this.validateElement(stack[stack.length - 1])) {
+            return false;
+        }
+
+        const unTemplated = text.replace(this.options.templateMatcher, '');
+        const trimmed = text.trim();
+        const containsAnythingMeaningful = this.options.assumeTextCondition.test(unTemplated);
+        return trimmed !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n);
+    }
+
+    /**
+     * Returns true if the element is ignored or if it has an i18n tag;
+     * we do not need to throw any warnings about it.
+     */
+    private validateElement(el: IElementEntry): boolean {
+        if (!el) {
+            return true;
+        }
+
+        if (this.options.ignoreTags.includes(el.tag)) {
+            return true;
+        }
+
+        return el.ignored || !!el.i18n;
     }
 }
