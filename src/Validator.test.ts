@@ -15,6 +15,11 @@ describe('Validator', () => {
             },
         },
         {
+            name: 'Ignores when flagged',
+            html: '<span><!-- i18n-checker: disable --> Hello!</span>',
+            result: true,
+        },
+        {
             name: 'Reports invalid i18n formats',
             html: '<span i18n="Hello">Hello!</span>',
             result: {

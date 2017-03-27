@@ -7,6 +7,7 @@ export interface IReporter {
 
 interface IElementEntry {
     tag: string;
+    ignored: boolean;
     i18n?: string;
 }
 
@@ -22,6 +23,7 @@ export interface II18nValidatorOptions {
     ignoreTags?: string[];
     templateMatcher?: RegExp;
     assumeTextCondition?: RegExp;
+    ignoreComment?: RegExp;
 }
 
 export class I18nValidator {
@@ -29,11 +31,13 @@ export class I18nValidator {
     public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
+    public static readonly defaultIgnoreComment = /^\s*i18n-checker:? ?disable\s*$/;
 
     constructor(private options: II18nValidatorOptions = {}) {
         options.ignoreTags = options.ignoreTags || [];
         options.templateMatcher = options.templateMatcher || I18nValidator.defaultTemplateMatcher;
         options.assumeTextCondition = options.assumeTextCondition || I18nValidator.defaultAssumeTextCondition;
+        options.ignoreComment = options.ignoreComment || I18nValidator.defaultIgnoreComment;
     }
 
     public processFile(fileName: string, contents: string = readFileSync(fileName, 'utf8')): IProblem[] {
@@ -64,6 +68,7 @@ export class I18nValidator {
                     }
                     stack.push(curr = {
                         tag,
+                        ignored: curr ? curr.ignored : false,
                         i18n: attributes['i18n'],
                     });
                     if (!attributes['i18n']) {
@@ -81,8 +86,16 @@ export class I18nValidator {
                         return;
                     }
                 },
+                oncomment: (comment: string) => {
+                    if (this.options.ignoreComment.test(comment)) {
+                        curr.ignored = true;
+                    }
+                },
                 ontext: (text: string) => {
                     if (curr && this.options.ignoreTags.includes(curr.tag)) {
+                        return;
+                    }
+                    if (curr && curr.ignored) {
                         return;
                     }
                     if (curr && curr.i18n) {
