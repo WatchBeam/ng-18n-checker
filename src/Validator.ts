@@ -24,6 +24,8 @@ export interface II18nValidatorOptions {
     templateMatcher?: RegExp;
     assumeTextCondition?: RegExp;
     ignoreComment?: RegExp;
+    urlRegEx?: RegExp;
+    emailRegEx?: RegExp;
 }
 
 export class I18nValidator {
@@ -32,12 +34,16 @@ export class I18nValidator {
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
     public static readonly defaultIgnoreComment = /^\s*i18n-checker(:| )disable\s*$/;
+    public static readonly urlRegEx = /\b\w+:\/\/\S+\b/ig;
+    public static readonly emailRegEx = /\b[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d_]+(\.[-a-z\d_]+)*\.[a-zрф]{2,})\b/i
 
     constructor(private options: II18nValidatorOptions = {}) {
         options.ignoreTags = options.ignoreTags || [];
         options.templateMatcher = options.templateMatcher || I18nValidator.defaultTemplateMatcher;
         options.assumeTextCondition = options.assumeTextCondition || I18nValidator.defaultAssumeTextCondition;
         options.ignoreComment = options.ignoreComment || I18nValidator.defaultIgnoreComment;
+        options.urlRegEx = options.urlRegEx || I18nValidator.urlRegEx;
+        options.emailRegEx = options.emailRegEx || I18nValidator.emailRegEx;
     }
 
     public processFile(fileName: string, contents: string = readFileSync(fileName, 'utf8')): IProblem[] {
@@ -123,8 +129,11 @@ export class I18nValidator {
             return false;
         }
 
-        const unTemplated = text.replace(this.options.templateMatcher, '');
-        const trimmed = text.trim();
+        const unTemplated = text
+            .replace(this.options.templateMatcher, '')
+            .replace(this.options.urlRegEx, '')
+            .replace(this.options.emailRegEx, '');
+        const trimmed = unTemplated.replace(/[^\w\s]|_/g, '').trim();
         const containsAnythingMeaningful = this.options.assumeTextCondition.test(unTemplated);
         return trimmed !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n);
     }

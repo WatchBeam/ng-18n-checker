@@ -60,8 +60,28 @@ describe('Validator', () => {
             result: true,
         },
         {
+            name: 'Does not report template tags in a sequence',
+            html: '<span>{{test}}{{test2}} {{test3}}</span>',
+            result: true,
+        },
+        {
             name: 'Does not report template tags with simple additions',
             html: '<span> /${{test}}$. %</span>',
+            result: true,
+        },
+        {
+            name: 'Ignores URLs',
+            html: '<span>https://google.com </span>',
+            result: true,
+        },
+        {
+            name: 'Ignores Emails',
+            html: '<span> something@gmail.com</span>',
+            result: true,
+        },
+        {
+            name: 'Ignores simple punctuation garbage',
+            html: '<span>.,,.$$</span>',
             result: true,
         },
     ];

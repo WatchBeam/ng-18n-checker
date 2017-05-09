@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import yargs = require('yargs');
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { sync } from 'glob';
 import { resolve } from 'path';
 
@@ -28,6 +28,9 @@ const args: ICLIOpts = yargs.usage(
     'Usage: ng-18-checker -r reporter1 reporter2 -i ignoredTag1 ignoredTag2 -p attributePattern fileGlob1 fileGlob2 ...',
 )
 .help()
+
+.config('file', configPath => JSON.parse(readFileSync(configPath, 'utf-8')))
+
 .array('reporters')
 .alias('reporters', 'r')
 .default('reporters', ['pretty'])
@@ -55,6 +58,18 @@ const args: ICLIOpts = yargs.usage(
 .default('assumeTextCondition', I18nValidator.defaultAssumeTextCondition.source)
 .coerce<string, RegExp>('assumeTextCondition', str => new RegExp(str))
 .describe('assumeTextCondition', 'Pattern to identify minimal text that should force a translation to be present.')
+
+.string('urlRegEx')
+.alias('urlRegEx', 'u')
+.default('urlRegEx', I18nValidator.urlRegEx.source)
+.coerce<string, RegExp>('urlRegEx', str => new RegExp(str))
+.describe('urlRegEx', 'Pattern to identify as url and ignore.')
+
+.string('emailRegEx')
+.alias('emailRegEx', 'a')
+.default('emailRegEx', I18nValidator.emailRegEx.source)
+.coerce<string, RegExp>('emailRegEx', str => new RegExp(str))
+.describe('emailRegEx', 'Pattern to identify as email and ignore.')
 .argv;
 
 if (args.help) {
