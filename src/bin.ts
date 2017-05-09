@@ -29,7 +29,7 @@ const args: ICLIOpts = yargs.usage(
 )
 .help()
 
-.config('file', configPath => JSON.parse(readFileSync(configPath, 'utf-8')))
+.config('config', configPath => JSON.parse(readFileSync(configPath, 'utf-8')))
 
 .array('reporters')
 .alias('reporters', 'r')
