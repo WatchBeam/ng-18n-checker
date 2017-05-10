@@ -31,7 +31,7 @@ export class I18nValidator {
     public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
-    public static readonly defaultIgnoreComment = /^\s*i18n-checker(:| )disable\s*$/;
+    public static readonly defaultIgnoreComment = /^\s*ng-i18n-checker(:| )disable\s*$/;
 
     constructor(private options: II18nValidatorOptions = {}) {
         options.ignoreTags = options.ignoreTags || [];
