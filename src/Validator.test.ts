@@ -16,12 +16,12 @@ describe('Validator', () => {
         },
         {
             name: 'Ignores when flagged',
-            html: '<span><!-- i18n-checker:disable --> Hello!</span>',
+            html: '<span><!-- ng-i18n-checker:disable --> Hello!</span>',
             result: true,
         },
         {
             name: 'Ignores deep flagged',
-            html: '<span><!-- i18n-checker:disable -->Hello!<span>sub</span></span>',
+            html: '<span><!-- ng-i18n-checker:disable -->Hello!<span>sub</span></span>',
             result: true,
         },
         {

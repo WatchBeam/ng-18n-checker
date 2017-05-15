@@ -33,7 +33,7 @@ export class I18nValidator {
     public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
-    public static readonly defaultIgnoreComment = /^\s*i18n-checker(:| )disable\s*$/;
+    public static readonly defaultIgnoreComment = /^\s*ng-i18n-checker(:| )disable\s*$/;
     public static readonly urlRegEx = /\b\w+:\/\/\S+\b/ig;
     public static readonly emailRegEx = /\b[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d_]+(\.[-a-z\d_]+)*\.[a-zрф]{2,})\b/i;
 

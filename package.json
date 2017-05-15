@@ -1,6 +1,6 @@
 {
   "name": "ng-i18n-checker",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Utility validate i18n attribution for angular >= 2 projects.",
   "main": "dist/Validator.js",
   "typings": "dist/Validator.d.ts",
