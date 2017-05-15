@@ -6,5 +6,14 @@ This utility helps you identifying missing translation strings in html files in 
 
 If you need to disable the check in a sub tree, use `<!-- i18n-checker:disable -->` anywhere in the text segment.
 
+Example:
+
+```html
+<div>
+    <!-- i18n-checker:disable -->
+    <span>No i18n errors</span> will be reported in this context.
+<div>
+```
+
 # CLI use:
 Run `ng-i18n-checker --help`

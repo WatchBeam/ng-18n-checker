@@ -5,5 +5,5 @@
 # 0.3.0
 - Added sub tree ignore via `<!-- i18n-checker:disable -->`
 # 0.4.0
-- Ignore URLs, Emails and trim puntution
+- Ignore URLs, Emails and trim punctuation
 - Added config file support via `--config`
