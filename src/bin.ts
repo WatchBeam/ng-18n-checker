@@ -66,7 +66,7 @@ const args: ICLIOpts = yargs.usage(
 .describe('urlRegEx', 'Pattern to identify as url and ignore.')
 
 .string('emailRegEx')
-.alias('emailRegEx', 'a')
+.alias('emailRegEx', 'e')
 .default('emailRegEx', I18nValidator.emailRegEx.source)
 .coerce<string, RegExp>('emailRegEx', str => new RegExp(str))
 .describe('emailRegEx', 'Pattern to identify as email and ignore.')
