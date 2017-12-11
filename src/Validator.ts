@@ -19,31 +19,39 @@ export interface IProblem {
 }
 
 export interface II18nValidatorOptions {
-    attrPattern?: RegExp;
-    ignoreTags?: string[];
-    templateMatcher?: RegExp;
-    assumeTextCondition?: RegExp;
-    ignoreComment?: RegExp;
-    urlRegEx?: RegExp;
-    emailRegEx?: RegExp;
+    attrPattern: RegExp;
+    ignoreTags: string[];
+    templateMatcher: RegExp;
+    assumeTextCondition: RegExp;
+    ignoreComment: RegExp;
+    ignorePatterns: RegExp[];
 }
 
 export class I18nValidator {
-
     public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
     public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
     public static readonly defaultAssumeTextCondition = /\w{2,}/;
     public static readonly defaultIgnoreComment = /^\s*ng-i18n-checker(:| )disable\s*$/;
     public static readonly urlRegEx = /\b\w+:\/\/\S+\b/ig;
-    public static readonly emailRegEx = /\b[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d_]+(\.[-a-z\d_]+)*\.[a-zрф]{2,})\b/i;
+    public static readonly emailRegEx = /\b[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d_]+(\.[-a-z\d_]+)*\.[a-zрф]{2,})\b/ig;
+    public static readonly htmlCharacaterRegEx = /\&[a-z0-9]+;/ig;
 
-    constructor(private options: II18nValidatorOptions = {}) {
-        options.ignoreTags = options.ignoreTags || [];
-        options.templateMatcher = options.templateMatcher || I18nValidator.defaultTemplateMatcher;
-        options.assumeTextCondition = options.assumeTextCondition || I18nValidator.defaultAssumeTextCondition;
-        options.ignoreComment = options.ignoreComment || I18nValidator.defaultIgnoreComment;
-        options.urlRegEx = options.urlRegEx || I18nValidator.urlRegEx;
-        options.emailRegEx = options.emailRegEx || I18nValidator.emailRegEx;
+    private readonly options: II18nValidatorOptions;
+
+    constructor(options: Partial<II18nValidatorOptions> = {}) {
+        this.options = {
+            attrPattern: I18nValidator.defaultAttributeMacher,
+            ignoreTags: [],
+            templateMatcher: I18nValidator.defaultTemplateMatcher,
+            assumeTextCondition: I18nValidator.defaultAssumeTextCondition,
+            ignoreComment: I18nValidator.defaultIgnoreComment,
+            ignorePatterns: [
+                I18nValidator.urlRegEx,
+                I18nValidator.emailRegEx,
+                I18nValidator.htmlCharacaterRegEx,
+            ],
+            ...options,
+        };
     }
 
     public processFile(fileName: string, contents: string = readFileSync(fileName, 'utf8')): IProblem[] {
@@ -129,13 +137,18 @@ export class I18nValidator {
             return false;
         }
 
-        const unTemplated = text
-            .replace(this.options.templateMatcher, '')
-            .replace(this.options.urlRegEx, '')
-            .replace(this.options.emailRegEx, '');
-        const trimmed = unTemplated.replace(/[^\w\s]|_/g, '').trim();
-        const containsAnythingMeaningful = this.options.assumeTextCondition.test(unTemplated);
-        return trimmed !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n);
+        let filtered = text;
+        this.options.ignorePatterns.forEach(pattern => {
+            filtered = filtered.replace(pattern, '');
+        });
+
+        // Remove template tags
+        filtered = filtered.replace(this.options.templateMatcher, '');
+        // Remove extraneous whitespace.
+        filtered = filtered.replace(/[^\w\s]|_/g, '').trim();
+
+        const containsAnythingMeaningful = this.options.assumeTextCondition.test(filtered);
+        return filtered !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n);
     }
 
     /**

@@ -35,6 +35,11 @@ describe('Validator', () => {
             },
         },
         {
+            name: 'Ignores html special characters',
+            html: '<span> &nbsp;&quot; </span>',
+            result: true,
+        },
+        {
             name: 'Reports nested i18n tags',
             html: '<span i18n="Greeting:Hello user">Hello <span i18n="Text:User">User!</span></span>',
             result: {
