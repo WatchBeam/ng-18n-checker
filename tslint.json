@@ -24,6 +24,10 @@
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"], // for unused params
 
     "no-increment-decrement": false,
-    "no-string-literal": false
+    "no-string-literal": false,
+    "typedef": false,
+    "no-implicit-dependencies": [true, "dev"],
+    "no-void-expression": false,
+    "strict-boolean-expressions": false
   }
 }

@@ -2,20 +2,20 @@ import { readFileSync } from 'fs';
 import { Parser } from 'htmlparser2';
 
 export interface IReporter {
-  report(problems: IProblem[]): Promise<void>;
+  report(problems: IProblem[]): void;
 }
 
 interface IElementEntry {
   tag: string;
   ignored: boolean;
-  i18n?: string;
+  i18n: string;
 }
 
 export interface IProblem {
   fileName: string;
   line: number;
   problem: 'missing' | 'format' | 'nested';
-  meta?: string;
+  meta: string;
 }
 
 export interface II18nValidatorOptions {
@@ -27,6 +27,9 @@ export interface II18nValidatorOptions {
   ignorePatterns: RegExp[];
 }
 
+/**
+ * Main validator that performs checking.
+ */
 export class I18nValidator {
   public static readonly defaultAttributeMacher = /^([\w-]+)#(\w+):(\w+)\|.*?$/;
   public static readonly defaultTemplateMatcher = /\{\{.*?\}\}/g;
@@ -102,7 +105,6 @@ export class I18nValidator {
               problem: 'format',
               meta: attributes['i18n'],
             });
-            return;
           }
         },
         oncomment: (comment: string) => {
@@ -129,6 +131,7 @@ export class I18nValidator {
         recognizeSelfClosing: true,
       },
     ).parseComplete(contents);
+
     return problems;
   }
 
@@ -152,6 +155,7 @@ export class I18nValidator {
     filtered = filtered.replace(/[^\w\s]|_/g, '').trim();
 
     const containsAnythingMeaningful = this.options.assumeTextCondition.test(filtered);
+
     return filtered !== '' && containsAnythingMeaningful && !stack.some(p => !!p.i18n);
   }
 

@@ -71,6 +71,7 @@ describe('Validator', () => {
     },
     {
       name: 'Does not report template tags with simple additions',
+      // tslint:disable-next-line:no-invalid-template-strings
       html: '<span> /${{test}}$. %</span>',
       result: true,
     },

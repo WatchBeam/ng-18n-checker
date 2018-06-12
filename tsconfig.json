@@ -1,34 +1,21 @@
 {
-    "compilerOptions": {
-        "declaration": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "strictNullChecks": false,
-        "module": "commonjs",
-        "sourceMap": true,
-        "target": "es6",
-        "outDir": "dist",
-        "lib": [
-            "es2015.symbol",
-            "es5",
-            "es2015.core",
-            "es2015.collection",
-            "es2015.promise",
-            "es2016.array.include"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ]
-    },
-    "exclude": [
-        "node_modules",
-        "dist",
-        "*.test.ts"
+  "compilerOptions": {
+    "declaration": true,
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es2017",
+    "outDir": "dist",
+    "lib": [
+      "es2017",
     ]
+  },
+  "include": [
+    "src"
+  ]
 }
